@@ -18,6 +18,42 @@ than 100 of course.
 
 
 * todo discover what are these files and who writes them? python/liboptv/cython? 
+let's check in PBI
+
+```
+    def save_point_sets(self, detected_file, matched_file, cal_points):
+        """
+        Save text files of the intermediate results of detection and of 
+        matching the detections to the known positions. This may later be used
+        for multiplane calibration.
+        
+        Currently assumes that the first targets up to the number of known 
+        points are the matched points.
+        
+        Arguments:
+        detected_file - will contain the detected points in a 3 column format -
+            point number, x, y.
+        matched_file - same for the known positions that were matched, with 
+            columns for point number, x, y, z.
+        cal_points - the known points array, as in other methods.
+        """
+        detected = np.empty((len(cal_points), 2))
+       
+        nums = np.arange(len(cal_points))
+        for pnr in nums:
+            detected[pnr] = self._targets[pnr].pos()
+        
+        detected = np.hstack((nums[:,None], detected))
+        known = np.hstack((nums[:,None], cal_points))
+        
+        # Formats from jw_ptv.c, until we can rationalize this stuff.        
+        np.savetxt(detected_file, detected, fmt="%9.5f")
+        np.savetxt(matched_file, known, fmt="%10.5f")
+ ```       
+
+
+
+
 - create additional parameter set, called multiplane or combination
 - in this set, set "calibrate from Z" to 1 and "combine" to 1
 - create parameters/multi_planes.par - not yet in GUI 
@@ -38,7 +74,7 @@ Raw orientation - if both examine parameters are set to 1, then do the following
 
 
 Inside sortgrid part: 
-
+```
             /* dump dataset for rdb */
             if (examine == 4)
             {
@@ -77,13 +113,13 @@ Inside sortgrid part:
                 printf ("dataset dumped into %s\n", filename);
             }
             break;
-            
+```            
             
 Under Orientation part: 
 
 
 1. saving
-
+```
             for (i_img = 0; i_img < cpar->num_cams; i_img++)
             {
                 for (i=0; i<nfix ; i++)
@@ -124,10 +160,10 @@ Under Orientation part:
                     printf ("resection data written to disk\n");
                 }
                 
-                
+ ```               
 2. if it's a multi-plane folder, then "resection":
 
-
+```
                 /* resection with dumped datasets */
                 if (examine == 4)
                 {
@@ -211,4 +247,4 @@ Under Orientation part:
                     
                     
                 }
-                
+```
