@@ -20,3 +20,5 @@ Raw orientation - if both examine parameters are set to 1, then do the following
         b) combine this info into a 3D calibration target (virtual 3d target) and virtual points
         c) run the usual Raw Orientation and then Fine Orientation
         
+    this step is identical to pbi/ptv/multiplane.py
+        
