@@ -1161,7 +1161,7 @@ if __name__ == '__main__':
         print(
             'Please provide an experimental directory as an input, fallback to a default\n')
         exp_path = '/Users/alex/Documents/OpenPTV/test_multiplane' # or test_cavity, test_3cam, test_2cam
-        exp_path = '/Users/alex/Documents/repos/multiplane_calibration'
+        # exp_path = '/Users/alex/Documents/repos/multiplane_calibration'
 
     if not os.path.isdir(exp_path):
         raise OSError("Wrong experimental directory %s " % exp_path)

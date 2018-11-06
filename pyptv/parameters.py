@@ -187,7 +187,6 @@ class PtvParams(Parameters):
         return "ptv.par"
 
     def read(self):
-        print("inside PtvParams.read")
         if not os.path.isfile(self.filepath()):
             warning("%s does not exist " % self.filepath())
         try:
@@ -223,7 +222,6 @@ class PtvParams(Parameters):
             self.istherefile(self.img_cal[i])
 
     def write(self):
-        print("inside PtvParams.write")
         try:
             with open(self.filepath(), 'w') as f:
                 f.write("%d\n" % self.n_img)
@@ -521,7 +519,6 @@ class TargRecParams(Parameters):
         return "targ_rec.par"
 
     def read(self):
-        print("inside TargRecParams.read")
         try:
             with open(self.filepath(), 'r') as f:
 
@@ -544,7 +541,6 @@ class TargRecParams(Parameters):
             error(None, "Error reading from %s" % self.filepath())
 
     def write(self):
-        print("inside TargRecParams.write")
         try:
             f = open(self.filepath(), 'w')
 #            for i in range(self.n_img):
@@ -919,9 +915,7 @@ class ExamineParams(Parameters):
 
     def __init__(self, Examine_Flag=Bool, Combine_Flag=Bool, path=Parameters.default_path):
         Parameters.__init__(self, path)
-        self.set(Examine_Flag, Combine_Flag)
 
-    def set(self, Examine_Flag=Bool, Combine_Flag=Bool):
         (self.Examine_Flag, self.Combine_Flag) = \
             (Examine_Flag, Combine_Flag)
 
@@ -929,32 +923,21 @@ class ExamineParams(Parameters):
         return "examine.par"
 
     def read(self):
-        if os.path.exists(self.filepath()) is False:
-            f = open(self.filepath(), 'w')
-            f.write("%d\n" % 0)
-            f.write("%d\n" % 0)
-            f.close()
-
-        # print "inside ExamineParams.read"
         try:
-            f = open(self.filepath(), 'r')
-
-            self.Examine_Flag = (int(g(f)) != 0)
-            self.Combine_Flag = (int(g(f)) != 0)
-
-            f.close()
+            with open(self.filepath(), 'r') as f:
+                self.Examine_Flag = (int(g(f)) != 0)
+                self.Combine_Flag = (int(g(f)) != 0)
+            # f.close()
+                
         except:
-            error(None, "%s not found" % self.filepath())
+            error(None, "%s failed in read flags" % self.filepath())
 
     def write(self):
-        # print "inside ExamineParams.write"
         try:
-            f = open(self.filepath(), 'w')
+            with open(self.filepath(), 'w') as f:
+                f.write("%d\n" % self.Examine_Flag)
+                f.write("%d\n" % self.Combine_Flag)
 
-            f.write("%d\n" % self.Examine_Flag)
-            f.write("%d\n" % self.Combine_Flag)
-
-            f.close()
             return True
         except:
             error(None, "Error writing %s." % self.filepath())

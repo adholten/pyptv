@@ -592,6 +592,11 @@ class CalibrationGUI(HasTraits):
         
         print("_button_sort_grid_fired")
 
+        # check if we're at the multi plane calibration
+        multi = par.ExamineParams(path = self.active_path)
+        multi.read()
+        # print(int(multi.Examine_Flag),int(multi.Combine_Flag))
+
 
         for i_cam in range(self.n_cams):
 
@@ -612,8 +617,26 @@ class CalibrationGUI(HasTraits):
             self.camera[i_cam]._plot.overlays = []
             self.camera[i_cam].plot_num_overlay(x, y, pnr)
 
+            # if 1,0 
+            if int(multi.Examine_Flag) and not int(multi.Combine_Flag): 
+                
+                detected = np.zeros((len(targs), 3))
+        
+                for i,t in enumerate(targs):
+                    detected[i,0]  = int(t.pnr())
+                    detected[i,1:] = t.pos()
+                    
+        
+                detected_file = self.calParams.img_cal_name[i_cam]+'.crd'
+                matched_file = self.calParams.img_cal_name[i_cam]+'.fix'
+                
+                # Formats from jw_ptv.c, until we can rationalize this stuff.        
+                np.savetxt(detected_file, detected, fmt="%d %9.5f %9.5f",delimiter='\t')
+                np.savetxt(matched_file, self.cal_points['pos'], fmt="%9.5f",delimiter='\t')
+
         self.status_text = "Sort grid finished."
         self.pass_sortgrid = True
+
 
     # def _button_sort_grid_init_fired(self):
     #     """ TODO: Not implemented yet """
@@ -676,7 +699,7 @@ class CalibrationGUI(HasTraits):
                 self._project_cal_points(i_cam, color="red")
                 self._write_ori(i_cam)
 
-        self.status_text = "Orientation finished"
+        self.status_text = "Raw orientation using manually selected points has finished"
         self.pass_raw_orient = True
 
     def _button_fine_orient_fired(self):
@@ -704,6 +727,17 @@ class CalibrationGUI(HasTraits):
         for name, op_name in zip(names, op_names):
             if op_name is True:
                 flags.append(name)
+
+
+        # here we need to add a condition that if this is a multiplane folder, then 
+        # we need to collect the .crd and .fix files (like in pbi/multiplane.py) and
+        # work on them, rather on something that was selected before? 
+        # but it means that we have to pass through all the detection/sortgrid? 
+        # i.e. we shall instruct users to create a single plane parameters that work
+        # copy it to the new parameter set and then just add multi_planes.par and 
+        # a flag for combining the data. 
+        # in each plane we do fine orientation with what we have or we don't? 
+
 
 
         for i_cam in range(self.n_cams):
