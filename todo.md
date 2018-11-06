@@ -2,13 +2,13 @@
 
 introduction
 multiplane calibration logic is the following: 
-- create parameter sets per each plane (see test_multiplane or multiplane_calibration)
+- create parameter sets per each plane (see `test_multiplane` or `multiplane_calibration`)
 - in these sets, set "calibrate from Z" to 1 and "combine" to 0
 - in each plane do calibration on a 2D target, save .crd and .fix files 
-https://github.com/OpenPTV/openptv-python/blob/535c94676ab173b680b2b0f95a5bd9a44ae06fe7/src_c/jw_ptv.c#L752
+![](https://github.com/OpenPTV/openptv-python/blob/535c94676ab173b680b2b0f95a5bd9a44ae06fe7/src_c/jw_ptv.c#L752)
 or see below the code 
 
-Note: in each folder /cal for each plane the 'z' values in the calibration_target.txt file
+*Note*: in each folder /cal for each plane the 'z' values in the calibration_target.txt file
 are correct, this is how we know which plane is where. It also allows us to use different
 point numbering and see different points. BUT, at the end we have to combine them and 
 number again (providing unique id to each point). The question is whether we need to 
@@ -18,7 +18,7 @@ than 100 of course.
 
 
 * todo discover what are these files and who writes them? python/liboptv/cython? 
-let's check in PBI
+let's check in PBI - it's just `numpy.savetxt`
 
 ```
     def save_point_sets(self, detected_file, matched_file, cal_points):
@@ -70,50 +70,7 @@ Raw orientation - if both examine parameters are set to 1, then do the following
         
     this step is identical to pbi/ptv/multiplane.py, it's just using YAML instead of PAR
     to keep the information about the files with the dots and detections. 
-        
-
-
-Inside sortgrid part: 
-```
-            /* dump dataset for rdb */
-            if (examine == 4)
-            {
-                /* create filename for dumped dataset */
-                sprintf (filename, "dump_for_rdb");
-                fp1 = fopen (filename, "w");
                 
-                /* write # of points to file */
-                fprintf (fp1, "%d\n", nfix);
-                
-                /* write point and image coord to file */
-                for (i=0; i<nfix; i++)
-                {
-                    fprintf (fp1, "%4d %10.3f %10.3f %10.3f   %d    ",
-                             fix[i].pnr, fix[i].x, fix[i].y, fix[i].z, 0);
-                    for (i_img=0; i_img < cpar->num_cams; i_img++)
-                    {
-                        if (pix[i_img][i].pnr >= 0)
-                        {
-                            /* transform pixel coord to metric */
-                            pixel_to_metric(&crd[i_img][i].x, &crd[i_img][i].y, 
-                                pix[i_img][i].x, pix[i_img][i].y, cpar);
-                            fprintf (fp1, "%4d %8.5f %8.5f    ",
-                                     pix[i_img][i].pnr,
-                                     crd[i_img][i].x, crd[i_img][i].y);
-                        }
-                        else
-                        {
-                            fprintf (fp1, "%4d %8.5f %8.5f    ",
-                                     pix[i_img][i].pnr, 0.0, 0.0);
-                        }
-                    }
-                    fprintf (fp1, "\n");
-                }
-                fclose (fp1);
-                printf ("dataset dumped into %s\n", filename);
-            }
-            break;
-```            
             
 Under Orientation part: 
 
