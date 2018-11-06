@@ -1,0 +1,22 @@
+# todo list for the multiplane calibration
+
+introduction
+multiplane calibration logic is the following: 
+- create parameter sets per each plane (see test_multiplane or multiplane_calibration)
+- in these sets, set "calibrate from Z" to 1 and "combine" to 0
+- in each plane do calibration on a 2D target, save .crd and .fix files 
+* todo discover what are these files and who writes them? python/liboptv/cython? 
+- create additional parameter set, called multiplane or combination
+- in this set, set "calibrate from Z" to 1 and "combine" to 1
+- create parameters/multi_planes.par - not yet in GUI 
+* todo - think if we need it in GUI
+* todo - think how to do it in GUI
+- load image (whatever plane), regular procedure (detection, ...) then directly to 
+Raw orientation - if both examine parameters are set to 1, then do the following: (*todo)
+
+    - read the multi_planes.par
+    - from each multi plane folder (according to the list in the par file): 
+        a) read crd and fix
+        b) combine this info into a 3D calibration target (virtual 3d target) and virtual points
+        c) run the usual Raw Orientation and then Fine Orientation
+        
